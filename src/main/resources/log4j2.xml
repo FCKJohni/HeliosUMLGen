@@ -8,19 +8,12 @@
             <PatternLayout disableAnsi="false"
                            pattern="%highlight{ %-5level %c{1} - %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=white, DEBUG=green bold, TRACE=blue, SUCCESS=green}"/>
         </Console>
-        <Console name="ConsoleJDA" target="SYSTEM_OUT">
-            <PatternLayout disableAnsi="false"
-                           pattern="[JDA] %highlight{ %-5level %c{1} - %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=white, DEBUG=green bold, TRACE=blue, SUCCESS=green}"/>
-        </Console>
     </Appenders>
     <Loggers>
         <Logger name="com.oracle.truffle.api" level="off"/>
         <Root level="info">
             <AppenderRef level="info" ref="Console"/>
         </Root>
-        <Logger name="net.dv8tion.jda" level="info" additivity="false">
-            <AppenderRef level="info" ref="ConsoleJDA"/>
-        </Logger>
 
     </Loggers>
 </Configuration>
