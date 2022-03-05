@@ -4,4 +4,5 @@ import java.io.IOException;
 
 public interface IUMLTraverser {
 
+	public void accept(IUMLVisitor v) throws IOException;
 }

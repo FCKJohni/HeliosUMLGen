@@ -1,5 +1,7 @@
 package eu.heliosteam.heliosumlgen.javaModel.checks;
 
+
+import eu.heliosteam.heliosumlgen.JsonConfig;
 import eu.heliosteam.heliosumlgen.javaModel.*;
 import eu.heliosteam.heliosumlgen.javaModel.pattern.CompositePattern;
 
@@ -10,92 +12,144 @@ import java.util.Set;
 
 public class CompositeCheck implements IPatternCheck {
 
-    final Set<AbstractJavaStructure> set = new HashSet<>();
+	Set<AbstractJavaStructure> set = new HashSet<AbstractJavaStructure>();
 
-    @Override
-    public List<IPattern> check(JavaModel model) {
-        List<IPattern> toReturn = new LinkedList<>();
+	@Override
+	public List<IPattern> check(JavaModel model) {
+		List<IPattern> toReturn = new LinkedList<IPattern>();
+		
+		List<AbstractJavaStructure> leafPossibility = new LinkedList<AbstractJavaStructure>();
+		
+		for(AbstractJavaStructure struct: model.getStructures()) {
+			set.clear();
+			if(hasAddRemove(struct) /* && checkForCollection(struct, model) */) {
+				for(AbstractJavaStructure component: set) {
+					CompositePattern pattern = containsPattern(toReturn, component);
+					if(pattern != null) {
+						pattern.addComposite(struct);
+					} else {
+						pattern = new CompositePattern(component);
+						pattern.addComposite(struct);
+						
+						for(AbstractJavaStructure leaf: leafPossibility) {
+							if(leaf.isCastableTo(component)) {
+								pattern.addComposite(leaf);
+							}
+						}
+						toReturn.add(pattern);
+					}
+				}
+			} else {
+				for(IPattern pattern: toReturn) {
+					AbstractJavaStructure comp = ((CompositePattern)pattern).component;
+					if(struct.isCastableTo(comp)) {
+						((CompositePattern)pattern).addLeaf(struct);
+					}
+				}
+				leafPossibility.add(struct);				
+			}
+		}
+		
+		return toReturn;
+	}
+	
+	public boolean hasAddRemove(AbstractJavaStructure struct) {
+		List<AbstractJavaElement> addList = struct.getElementByName("add");
+		List<AbstractJavaElement> removeList = struct.getElementByName("remove");
+		
+		Set<AbstractJavaStructure> castedTo = new HashSet<AbstractJavaStructure>();
+		
+		boolean passing = false;
+		for(AbstractJavaElement add: addList) {
+			if(add instanceof JavaMethod && ((JavaMethod)add).arguments.size() == 1){
+				passing = true;
+				castedTo.add(((JavaMethod)add).arguments.get(0));
+			}	
+		}
+		if(!passing)
+			return false;
+		
+		for(AbstractJavaElement remove: removeList) {
+			if(remove instanceof JavaMethod  && ((JavaMethod)remove).arguments.size() == 1){
+				passing = true;
+				break;
+			}	
+		}
+		if(!passing)
+			return false;
+		
+		passing = false;
+		for(AbstractJavaStructure otherStruct: castedTo) {
+			if(struct.isCastableTo(otherStruct)) {
+				set.add(otherStruct);
+				passing = true;			
+			}			
+		}
+		
+		return passing;
+		/*
+		for(AbstractJavaElement ele: struct.subElements) {
+			if(!(ele instanceof JavaMethod)) {
+				continue;
+			}
+			JavaMethod meth = (JavaMethod) ele;
+			
+			if(meth.name.equalsIgnoreCase("add") && meth.arguments.size() == 1) {				
+				AbstractJavaStructure arg = meth.arguments.get(0);
+				if (struct.isCastableTo(arg)) {
+					for(AbstractJavaElement eleIn: struct.subElements) {
+						if(!(eleIn instanceof JavaMethod)) {
+							continue;
+						}
+						JavaMethod methIn = (JavaMethod) eleIn;
+						if(methIn.name.equalsIgnoreCase("remove")  && methIn.arguments.size() == 1) {
+							AbstractJavaStructure argIn = methIn.arguments.get(0);
+							
+							if(arg.equals(argIn)){
+								set.add(arg);
+								hasMethods = true;
+							}
+						}
+					}
+				}
+			}
+			
+		}*/
+		
+	}
 
-        List<AbstractJavaStructure> leafPossibility = new LinkedList<>();
+	public CompositePattern containsPattern(List<IPattern> patterns, AbstractJavaStructure to) {
+		for(IPattern pattern: patterns) {
+			CompositePattern dPattern = (CompositePattern)pattern;
+			if(dPattern.component.equals(to)) {
+				return dPattern;
+			}
+		}
+		return null;
+	}
+	
+	private boolean checkForCollection(AbstractJavaStructure struct, JavaModel model) {
+		AbstractJavaStructure collection = model.getStructure("java.util.Collection");
+		
+		for(AbstractJavaElement ele: struct.getElementsOfType(JavaField.class)) {
+			if(ele instanceof JavaField) {
+				if(ele.type.isCastableTo(collection)) {
+					return true;
+				} else {
+					for(AbstractJavaStructure component: set) {
+						if(ele.type.isCastableTo(component)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 
-        for (AbstractJavaStructure struct : model.getStructures()) {
-            set.clear();
-            if (hasAddRemove(struct) /* && checkForCollection(struct, model) */) {
-                for (AbstractJavaStructure component : set) {
-                    CompositePattern pattern = containsPattern(toReturn, component);
-                    if (pattern != null) {
-                        pattern.addComposite(struct);
-                    } else {
-                        pattern = new CompositePattern(component);
-                        pattern.addComposite(struct);
-
-                        for (AbstractJavaStructure leaf : leafPossibility) {
-                            if (leaf.isCastableTo(component)) {
-                                pattern.addComposite(leaf);
-                            }
-                        }
-                        toReturn.add(pattern);
-                    }
-                }
-            } else {
-                for (IPattern pattern : toReturn) {
-                    AbstractJavaStructure comp = ((CompositePattern) pattern).component;
-                    if (struct.isCastableTo(comp)) {
-                        ((CompositePattern) pattern).addLeaf(struct);
-                    }
-                }
-                leafPossibility.add(struct);
-            }
-        }
-
-        return toReturn;
-    }
-
-    public boolean hasAddRemove(AbstractJavaStructure struct) {
-        List<AbstractJavaElement> addList = struct.getElementByName("add");
-        List<AbstractJavaElement> removeList = struct.getElementByName("remove");
-
-        Set<AbstractJavaStructure> castedTo = new HashSet<>();
-
-        boolean passing = false;
-        for (AbstractJavaElement add : addList) {
-            if (add instanceof JavaMethod && ((JavaMethod) add).arguments.size() == 1) {
-                passing = true;
-                castedTo.add(((JavaMethod) add).arguments.get(0));
-            }
-        }
-        if (!passing)
-            return false;
-
-        for (AbstractJavaElement remove : removeList) {
-            if (remove instanceof JavaMethod && ((JavaMethod) remove).arguments.size() == 1) {
-                passing = true;
-                break;
-            }
-        }
-        if (!passing)
-            return false;
-
-        passing = false;
-        for (AbstractJavaStructure otherStruct : castedTo) {
-            if (struct.isCastableTo(otherStruct)) {
-                set.add(otherStruct);
-                passing = true;
-            }
-        }
-
-        return passing;
-
-    }
-
-    public CompositePattern containsPattern(List<IPattern> patterns, AbstractJavaStructure to) {
-        for (IPattern pattern : patterns) {
-            CompositePattern dPattern = (CompositePattern) pattern;
-            if (dPattern.component.equals(to)) {
-                return dPattern;
-            }
-        }
-        return null;
-    }
-
+	@Override
+	public void setSettings(JsonConfig config) {
+		// TODO Auto-generated method stub
+		
+	}
 }

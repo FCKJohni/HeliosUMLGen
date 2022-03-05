@@ -13,62 +13,66 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SingletonVisitor implements IStructureVisitor {
+	
+	private boolean requireGetInstance = true;
+	
 
-    private boolean requireGetInstance = true;
+	@Override
+	public List<IPattern> visit(JavaModel model, AbstractJavaStructure struct) {
+		List<IPattern> toReturn = new LinkedList<IPattern>();
+		
+		if(struct instanceof JavaInterface) {
+			// Do nothing
+		}
+		else if(checkForStaticInstance(struct) && !requireGetInstance){
+			toReturn.add(new SingletonPattern((JavaClass)struct));
+		}else if(checkForGetInstance(model, struct)) {
+			toReturn.add(new SingletonPattern((JavaClass)struct));
+		}
+		
+		return toReturn;
+	}
+	
+	private boolean checkForStaticInstance(AbstractJavaStructure structure) {
+		for(AbstractJavaElement element: structure.subElements) {
+			if(element.name.equalsIgnoreCase("instance"))
+				if(checkForModifier(element.modifiers, StaticModifier.class))
+					return true;
+		}
+		return false;
+	}
+	
+	private boolean checkForModifier(List<IModifier> modifiers, Class<?> c) {
+		for(IModifier mod: modifiers)
+			if(c.isInstance(mod))
+				return true;
+		
+		return false;
+	}
 
+	private boolean checkForGetInstance(JavaModel model, AbstractJavaStructure structure) {
+		JavaMethod method = structure.getMethodByQualifiedName(new QualifiedMethod("getInstance", "()" + Utils.getAsmName(structure.name)), model);
+		
+		if(method == null)
+			method = structure.getMethodByQualifiedName(new QualifiedMethod("get" + Utils.shortName(structure.name), "()" + Utils.getAsmName(structure.name)), model);
+		
+		if(method == null)
+			return false;
+		
+		if(method.arguments != null && method.arguments.size() != 0)
+			return false;
+		
+		if(!checkForModifier(method.modifiers, StaticModifier.class))
+			return false;
+		
+		if(method.type.equals(structure))
+			return true;
 
-    @Override
-    public List<IPattern> visit(JavaModel model, AbstractJavaStructure struct) {
-        List<IPattern> toReturn = new LinkedList<>();
+		return false;			
+	}
 
-        if (struct instanceof JavaInterface) {
-            // Do nothing
-        } else if (checkForStaticInstance(struct) && !requireGetInstance) {
-            toReturn.add(new SingletonPattern((JavaClass) struct));
-        } else if (checkForGetInstance(model, struct)) {
-            toReturn.add(new SingletonPattern((JavaClass) struct));
-        }
-
-        return toReturn;
-    }
-
-    private boolean checkForStaticInstance(AbstractJavaStructure structure) {
-        for (AbstractJavaElement element : structure.subElements) {
-            if (element.name.equalsIgnoreCase("instance"))
-                if (checkForModifier(element.modifiers))
-                    return true;
-        }
-        return false;
-    }
-
-    private boolean checkForModifier(List<IModifier> modifiers) {
-        for (IModifier mod : modifiers)
-            if (mod instanceof StaticModifier)
-                return true;
-
-        return false;
-    }
-
-    private boolean checkForGetInstance(JavaModel model, AbstractJavaStructure structure) {
-        JavaMethod method = structure.getMethodByQualifiedName(new QualifiedMethod("getInstance", "()" + Utils.getAsmName(structure.name)), model);
-
-        if (method == null)
-            method = structure.getMethodByQualifiedName(new QualifiedMethod("get" + Utils.shortName(structure.name), "()" + Utils.getAsmName(structure.name)), model);
-
-        if (method == null)
-            return false;
-
-        if (method.arguments != null && method.arguments.size() != 0)
-            return false;
-
-        if (!checkForModifier(method.modifiers))
-            return false;
-
-        return method.type.equals(structure);
-    }
-
-    @Override
-    public void setSettings(JsonConfig config) {
-        requireGetInstance = config.Singleton_RequireGetInstance;
-    }
+	@Override
+	public void setSettings(JsonConfig config) {
+		requireGetInstance = config.Singleton_RequireGetInstance;
+	}
 }

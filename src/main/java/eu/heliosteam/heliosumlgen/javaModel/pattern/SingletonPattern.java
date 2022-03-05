@@ -13,41 +13,41 @@ import java.util.List;
 
 public class SingletonPattern implements IPattern {
 
-    public static final String STEREOTYPE = "singleton";
-    final JavaClass struct;
+	JavaClass struct;
+	public static final String STEREOTYPE = "singleton";
+	
+	public SingletonPattern(JavaClass struct) {
+		this.struct = struct;
+	}
+	
+	@Override
+	public String getStereotype(AbstractJavaStructure struct) {
+		if (this.struct.equals(struct)) {
+			return STEREOTYPE;
+		}
+		return null;
+	}
 
-    public SingletonPattern(JavaClass struct) {
-        this.struct = struct;
-    }
+	@Override
+	public List<AbstractJavaStructure> getInvolvedStructes() {
+		List<AbstractJavaStructure> toReturn = new ArrayList<AbstractJavaStructure>(1);
+		toReturn.add(struct);
+		return toReturn;
+	}
 
-    @Override
-    public String getStereotype(AbstractJavaStructure struct) {
-        if (this.struct.equals(struct)) {
-            return STEREOTYPE;
-        }
-        return null;
-    }
+	@Override
+	public Color getDefaultColor() {
+		return Color.BLUE;
+	}
 
-    @Override
-    public List<AbstractJavaStructure> getInvolvedStructes() {
-        List<AbstractJavaStructure> toReturn = new ArrayList<>(1);
-        toReturn.add(struct);
-        return toReturn;
-    }
+	@Override
+	public List<Relation> getTopLevelRelations() {
+		return new LinkedList<Relation>();
+	}
 
-    @Override
-    public Color getDefaultColor() {
-        return Color.BLUE;
-    }
-
-    @Override
-    public List<Relation> getTopLevelRelations() {
-        return new LinkedList<>();
-    }
-
-    @Override
-    public String getRelationName() {
-        return "";
-    }
+	@Override
+	public String getRelationName() {
+		return "";
+	}
 
 }

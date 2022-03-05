@@ -22,4 +22,5 @@ repositories {
 dependencies {
     implementation("org.ow2.asm:asm:9.2")
     implementation("com.google.code.gson:gson:2.9.0")
+    implementation("commons-cli:commons-cli:1.5.0")
 }

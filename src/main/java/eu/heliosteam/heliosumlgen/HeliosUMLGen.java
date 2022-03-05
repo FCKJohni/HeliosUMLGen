@@ -1,7 +1,11 @@
 package eu.heliosteam.heliosumlgen;
 
+import eu.heliosteam.heliosumlgen.asm.QualifiedMethod;
+import eu.heliosteam.heliosumlgen.javaModel.visitor.ISequenceVisitor;
 import eu.heliosteam.heliosumlgen.javaModel.visitor.IUMLVisitor;
+import eu.heliosteam.heliosumlgen.javaModel.visitor.SDSequenceVisitor;
 import eu.heliosteam.heliosumlgen.javaModel.visitor.UMLDotVisitor;
+import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,80 +16,59 @@ import java.util.*;
 
 public class HeliosUMLGen {
 
-    public static void main(String[] args) throws IOException {
-        if (args.length == 0) {
-            System.out.println("Calls shown bellow");
-            System.out.println("UML -c <List of Classes> -p <List of Packages>");
-            System.out.println("EXAMPLE");
-            return;
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+        Options options = new Options();
+
+        Option type = new Option("t", "type", true, "Type to use [UML/SEQ]");
+        type.setRequired(true);
+        options.addOption(type);
+
+        Option classes = new Option("c", "classes", true, "List of Classes");
+        classes.setArgs(Option.UNLIMITED_VALUES);
+        options.addOption(classes);
+
+        Option packages = new Option("p", "packages", true, "List of packages");
+        packages.setArgs(Option.UNLIMITED_VALUES);
+        options.addOption(packages);
+
+        Option name = new Option("s", "short", false, "Whether or not to use long Class names");
+        options.addOption(name);
+
+        CommandLineParser commandLineParser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine commandLine = null;
+
+        try {
+            commandLine = commandLineParser.parse(options, args);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            formatter.printHelp("", options);
+
+            System.exit(1);
         }
         OutputStream out;
-        switch (args[0]) {
-            case "UML" -> {
-                Set<String> classesToVisit = new HashSet<>(getClassesFromArgs(args));
-                for (String s : getPackagesFromArgs(args)) {
+        String typeString = commandLine.getOptionValue("type");
+        JavaModelClassVisitor visitor;
+        if (typeString.equals("UML")) {
+            Set<String> classesToVisit = new HashSet<String>(List.of(commandLine.getOptionValues("classes")));
+            if (commandLine.hasOption("packages")) {
+                for (String s : commandLine.getOptionValues("packages")) {
                     classesToVisit.addAll(getClasses(s));
                 }
-                System.out.println(classesToVisit);
-                JavaModelClassVisitor visitor = new JavaModelClassVisitor(classesToVisit);
-                visitor.buildUMLModelDefault();
-                out = new FileOutputStream("output.txt");
-                IUMLVisitor umlVisitor = new UMLDotVisitor(out, visitor.getModel());
-                visitor.getModel().accept(umlVisitor);
             }
-            case "JSON" -> new JsonHandler(args).run();
-            default -> System.out.println("Not a valid diagram type. Valid Types: UML");
+
+            visitor = new JavaModelClassVisitor(classesToVisit);
+            visitor.buildUMLModelDefault();
+            out = new FileOutputStream("output.txt");
+            IUMLVisitor umlVisitor = new UMLDotVisitor(out, visitor.getModel(), commandLine.hasOption("short"));
+            visitor.getModel().accept(umlVisitor);
+        } else {
+            System.out.println("Not a valid diagram type. Valid Types: UML");
         }
     }
 
-    private static List<String> getPackagesFromArgs(String[] args) {
-        List<String> toReturn = new ArrayList<>();
 
-        int index = 0;
-        while (index < args.length && !args[index++].equals("-p")) {
-        }
-
-        for (int i = index; i < args.length; i++) {
-            if (args[i].equals("-c")) {
-                break;
-            }
-            toReturn.add(args[i]);
-        }
-        return toReturn;
-    }
-
-    private static List<String> getClassesFromArgs(String[] args) {
-        List<String> toReturn = new ArrayList<>();
-
-        int index = 0;
-        while (index < args.length && !args[index++].equals("-c")) {
-        }
-
-        for (int i = index; i < args.length; i++) {
-            if (args[i].equals("-p")) {
-                break;
-            }
-
-            toReturn.add(args[i]);
-        }
-
-        return toReturn;
-    }
-
-
-    /* From
-     * http://stackoverflow.com/questions/520328/can-you-find-all-classes-in-a-package-using-reflection?lq=1
-     * by user Amit
-    /**
-     * Scans all classes accessible from the context class loader which belong
-     * to the given package and subpackages.
-     *
-     * @param packageName
-     *            The base package
-     * @return The classes
-     * @throws ClassNotFoundException
-     * @throws IOException
-     */
     private static List<String> getClasses(String packageName) throws IOException {
         String path = packageName.replace('.', '/');
         Enumeration<URL> resources = ClassLoader.getSystemClassLoader().getResources(path);
@@ -101,14 +84,6 @@ public class HeliosUMLGen {
         return classes;
     }
 
-    /**
-     * Recursive method used to find all classes in a given directory and
-     * subdirs.
-     *
-     * @param directory   The base directory
-     * @param packageName The package name for classes found inside the base directory
-     * @return The classes
-     */
     private static List<String> findClasses(File directory, String packageName) {
         List<String> classes = new ArrayList<>();
         if (!directory.exists()) {

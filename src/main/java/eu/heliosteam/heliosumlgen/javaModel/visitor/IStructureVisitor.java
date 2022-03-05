@@ -9,8 +9,7 @@ import java.util.List;
 
 public interface IStructureVisitor {
 
-    List<IPattern> visit(JavaModel model, AbstractJavaStructure s);
-
-    void setSettings(JsonConfig config);
-
+	public List<IPattern> visit(JavaModel model, AbstractJavaStructure s);
+	public void setSettings(JsonConfig config);
+	
 }

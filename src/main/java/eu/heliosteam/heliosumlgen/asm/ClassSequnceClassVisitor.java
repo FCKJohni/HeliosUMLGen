@@ -15,74 +15,74 @@ import java.util.Set;
 
 public class ClassSequnceClassVisitor extends ClassDeclarationVisitor {
 
-    private final JavaModel model;
-    private final int depth;
-    private final SequenceStructure seqStructure;
-    private final String className;
-    private Set<QualifiedMethod> methodsToFind;
+	private JavaModel model;
+	private Set<QualifiedMethod> methodsToFind;
+	private int depth;
+	private SequenceStructure seqStructure;
+	private String className;
+	
+	public ClassSequnceClassVisitor(int api, JavaModel model, String className, Set<QualifiedMethod> methodsToFind, int depth, SequenceStructure seqStructure) {
+		super(api, model);
+		
+		this.model = model;
+		this.methodsToFind = methodsToFind;
+		this.depth = depth;
+		this.seqStructure = seqStructure;
+		this.className = className;
+	}
 
-    public ClassSequnceClassVisitor(int api, JavaModel model, String className, Set<QualifiedMethod> methodsToFind, int depth, SequenceStructure seqStructure) {
-        super(api, model);
+	public ClassSequnceClassVisitor(int asm5, JavaModel model2, String className, QualifiedMethod method, int depth2,
+			SequenceStructure seqStructure2) {
+		this(asm5, model2, className, (Set<QualifiedMethod>)null, depth2, seqStructure2);
+		this.methodsToFind = new HashSet<QualifiedMethod>();
+		methodsToFind.add(method);
+	}
 
-        this.model = model;
-        this.methodsToFind = methodsToFind;
-        this.depth = depth;
-        this.seqStructure = seqStructure;
-        this.className = className;
-    }
+	@Override
+	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+		MethodVisitor toDecorate = super.visitMethod(access, name, desc, signature, exceptions);
 
-    public ClassSequnceClassVisitor(int asm5, JavaModel model2, String className, QualifiedMethod method, int depth2,
-                                    SequenceStructure seqStructure2) {
-        this(asm5, model2, className, (Set<QualifiedMethod>) null, depth2, seqStructure2);
-        this.methodsToFind = new HashSet<>();
-        methodsToFind.add(method);
-    }
+		boolean isConstructor = false;
+		if(name.contains("<init>")) {
+			isConstructor = true;
+			name = name.replace("<init>", Utils.shortName(className));
+		}
+		
+		QualifiedMethod qmeth = new QualifiedMethod(name, desc);
+		if(methodsToFind.contains(qmeth)) {
+			MethodCallGroup method = new MethodCallGroup(className, qmeth);
+			toDecorate = new ClassSequnceMethodVisitor(this.api, toDecorate, method, this.model, this.depth, seqStructure);
+			
+			
+			AbstractJavaStructure structure = model.getStructure(Utils.getCleanName(this.className));
 
-    @Override
-    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        MethodVisitor toDecorate = super.visitMethod(access, name, desc, signature, exceptions);
+			AbstractJavaStructure returnType = Utils.getInstanceOrJavaStructure(model, Utils.getReturnType(desc));
+			List<AbstractJavaStructure> arguments = Utils.getInstanceOrJavaStructures(model,
+					Utils.getListOfArgs(desc).toArray(new String[0]));
 
-        boolean isConstructor = false;
-        if (name.contains("<init>")) {
-            isConstructor = true;
-            name = name.replace("<init>", Utils.shortName(className));
-        }
-
-        QualifiedMethod qmeth = new QualifiedMethod(name, desc);
-        if (methodsToFind.contains(qmeth)) {
-            MethodCallGroup method = new MethodCallGroup(className, qmeth);
-            toDecorate = new ClassSequnceMethodVisitor(this.api, toDecorate, method, this.model, this.depth, seqStructure);
-
-
-            AbstractJavaStructure structure = model.getStructure(Utils.getCleanName(this.className));
-
-            AbstractJavaStructure returnType = Utils.getInstanceOrJavaStructure(model, Utils.getReturnType(desc));
-            List<AbstractJavaStructure> arguments = Utils.getInstanceOrJavaStructures(model,
-                    Utils.getListOfArgs(desc).toArray(new String[0]));
-
-            structure.addSubElement(new JavaMethod(Utils.getInstanceOrJavaStructure(model, className), name, Utils.getAccessModifier(access),
-                    Utils.getModifiers(access), returnType, arguments, isConstructor));
-
-        }
-
-        return toDecorate;
-    }
-
-    @Override
-    public void visitEnd() {
-        super.visitEnd();
-
-        if (depth > 0)
-            try {
-                Map<String, Set<QualifiedMethod>> methods = seqStructure.getClassMethods();
-                seqStructure.vistedAll();
-                for (String s : methods.keySet()) {
-                    ClassReader reader = new ClassReader(s);
-                    ClassVisitor decVisitor = new ClassSequnceClassVisitor(this.api, model, s, methods.get(s), this.depth - 1, seqStructure);
-                    reader.accept(decVisitor, ClassReader.EXPAND_FRAMES);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-    }
+			structure.addSubElement(new JavaMethod(Utils.getInstanceOrJavaStructure(model, className), name, Utils.getAccessModifier(access),
+					Utils.getModifiers(access), returnType, arguments, isConstructor ));
+			
+		}
+		
+		return toDecorate;
+	}
+	
+	@Override
+	public void visitEnd() {
+		super.visitEnd();
+		
+		if(depth > 0)
+			try {
+				Map<String, Set<QualifiedMethod>> methods = seqStructure.getClassMethods();
+				seqStructure.vistedAll();
+				for(String s: methods.keySet()) {
+					ClassReader reader = new ClassReader(s);
+					ClassVisitor decVisitor = new ClassSequnceClassVisitor(this.api, model, s, methods.get(s), this.depth - 1, seqStructure);
+					reader.accept(decVisitor, ClassReader.EXPAND_FRAMES);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	}
 }
