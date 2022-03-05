@@ -7,10 +7,12 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Type;
 
+import java.util.Objects;
+
 public class ClassFieldVisitor extends ClassVisitor {
 
-	private String className;
-	private JavaModel model;
+	private final String className;
+	private final JavaModel model;
 
 	public ClassFieldVisitor(int api, ClassVisitor decorated, String className, JavaModel model) {
 		super(api, decorated);
@@ -32,13 +34,8 @@ public class ClassFieldVisitor extends ClassVisitor {
 		} else {
 			for (String s : Utils.getGenericsPart(signature)) {
 				JavaField typeClass;
-				if(s != null) {
-					typeClass = new JavaField(structure, name, Utils.getAccessModifier(access), Utils.getModifiers(access),
-							Utils.getInstanceOrJavaStructure(model, s));
-				} else {
-					typeClass = new JavaField(structure, name, Utils.getAccessModifier(access), Utils.getModifiers(access),
-							Utils.getInstanceOrJavaStructure(model, Utils.getWithoutGenerics(signature)));
-				}
+				typeClass = new JavaField(structure, name, Utils.getAccessModifier(access), Utils.getModifiers(access),
+						Utils.getInstanceOrJavaStructure(model, Objects.requireNonNullElseGet(s, () -> Utils.getWithoutGenerics(signature))));
 				structure.addSubElement(typeClass);					
 				
 				

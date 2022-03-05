@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class AbstractJavaStructure extends AbstractJavaThing {
-	public List<AbstractJavaElement> subElements;
+	public final List<AbstractJavaElement> subElements;
 	public List<AbstractJavaStructure> implement;
 
 	public AbstractJavaStructure(String name, IAccessModifier access, List<IModifier> modifiers,
@@ -25,7 +25,7 @@ public abstract class AbstractJavaStructure extends AbstractJavaThing {
 
 	public AbstractJavaStructure(String cleanName) {
 		super(cleanName);
-		this.subElements = new LinkedList<AbstractJavaElement>();
+		this.subElements = new LinkedList<>();
 	}
 
 	public void addSubElement(AbstractJavaElement element) {
@@ -51,7 +51,7 @@ public abstract class AbstractJavaStructure extends AbstractJavaThing {
 	}
 	
 	public List<AbstractJavaElement> getElementByName(String name) {
-		List<AbstractJavaElement> toReturn = new LinkedList<AbstractJavaElement>();
+		List<AbstractJavaElement> toReturn = new LinkedList<>();
 		for(AbstractJavaElement element: this.subElements) {
 			if(element.name.equals(name)){
 				toReturn.add(element);
@@ -89,7 +89,7 @@ public abstract class AbstractJavaStructure extends AbstractJavaThing {
 	}
 	
 	public List<JavaMethod> getConstructors() {
-		List<JavaMethod> toReturn = new LinkedList<JavaMethod>();
+		List<JavaMethod> toReturn = new LinkedList<>();
 		for(AbstractJavaElement ele: subElements) {
 			if(ele instanceof JavaMethod) {
 				if(((JavaMethod)ele).isConstructor) {
@@ -116,7 +116,7 @@ public abstract class AbstractJavaStructure extends AbstractJavaThing {
 	}
 	
 	public Set<AbstractJavaStructure> getSuperClasses() {
-		Set<AbstractJavaStructure> toReturn = new HashSet<AbstractJavaStructure>();
+		Set<AbstractJavaStructure> toReturn = new HashSet<>();
 		getSuperClasses(toReturn);
 		return toReturn;
 	}
@@ -130,7 +130,7 @@ public abstract class AbstractJavaStructure extends AbstractJavaThing {
 	}
 	
 	public <T extends AbstractJavaElement> List<T> getElementsOfType(Class<T> clazz) {
-		List<T> list = new LinkedList<T>();
+		List<T> list = new LinkedList<>();
 		getElementsOfType(list, clazz);
 		return list;
 	}

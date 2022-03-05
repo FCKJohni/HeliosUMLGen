@@ -8,8 +8,8 @@ import java.util.List;
 
 public abstract class AbstractJavaElement extends AbstractJavaThing {
 	
-	public AbstractJavaStructure owner;
-	public AbstractJavaStructure type;
+	public final AbstractJavaStructure owner;
+	public final AbstractJavaStructure type;
 	
 
 	public AbstractJavaElement(AbstractJavaStructure owner, String name, IAccessModifier access, List<IModifier> modifiers,

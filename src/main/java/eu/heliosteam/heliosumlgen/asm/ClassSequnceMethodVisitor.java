@@ -5,8 +5,8 @@ import org.objectweb.asm.MethodVisitor;
 
 public class ClassSequnceMethodVisitor extends ClassMethodLineVisitor {
 
-	private int depth;
-	private SequenceStructure seqStructure;
+	private final int depth;
+	private final SequenceStructure seqStructure;
 	
 	public ClassSequnceMethodVisitor(int api, MethodVisitor mv, MethodCallGroup method, JavaModel model, int depth, SequenceStructure seqStructure) {
 		super(api, mv, method, model);

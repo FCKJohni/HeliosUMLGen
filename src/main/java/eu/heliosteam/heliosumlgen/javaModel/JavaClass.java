@@ -29,16 +29,13 @@ public class JavaClass extends AbstractJavaStructure {
 
 		super.accept(v);
 	}
-	
+
 	@Override
 	public boolean isCastableTo(AbstractJavaStructure struct) {
 		if(super.isCastableTo(struct))
 			return true;
-		
-		if(superClass != null && superClass.isCastableTo(struct))
-			return true;
-		
-		return false;
+
+		return superClass != null && superClass.isCastableTo(struct);
 	}
 	
 	@Override

@@ -14,7 +14,7 @@ public class DecoratorCheck implements IPatternCheck {
 
 	@Override
 	public List<IPattern> check(JavaModel model) {
-		List<IPattern> toReturn = new LinkedList<IPattern>();
+		List<IPattern> toReturn = new LinkedList<>();
 		for(AbstractJavaStructure struct: model.getStructures()){
 			AbstractJavaStructure mayBeValid = checkForPotentialDecorator(struct);
 			
@@ -23,7 +23,7 @@ public class DecoratorCheck implements IPatternCheck {
 				if(potential != null) {
 					potential.addToDecorators(struct);
 				} else {
-					Set<AbstractJavaStructure> set = new HashSet<AbstractJavaStructure>();
+					Set<AbstractJavaStructure> set = new HashSet<>();
 					
 					populateListOfClassesToOther(set, struct, mayBeValid);
 					DecoratorPattern pattern = new DecoratorPattern(mayBeValid, set);

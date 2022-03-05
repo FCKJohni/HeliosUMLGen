@@ -11,8 +11,8 @@ import java.util.Set;
 
 public class DecoratorPattern implements IPattern {
 	
-	public Set<AbstractJavaStructure> set;
-	public AbstractJavaStructure struct;
+	public final Set<AbstractJavaStructure> set;
+	public final AbstractJavaStructure struct;
 	public static final String COMPONENT = "component";
 	public static final String DECORATOR = "decorator";
 	public static final String DECORATOR_NAME = "decorates";
@@ -39,7 +39,7 @@ public class DecoratorPattern implements IPattern {
 
 	@Override
 	public List<AbstractJavaStructure> getInvolvedStructes() {
-		List<AbstractJavaStructure> toReturn = new LinkedList<AbstractJavaStructure>();
+		List<AbstractJavaStructure> toReturn = new LinkedList<>();
 		toReturn.addAll(set);
 		return  toReturn;
 	}
@@ -51,7 +51,7 @@ public class DecoratorPattern implements IPattern {
 
 	@Override
 	public List<Relation> getTopLevelRelations() {
-		List<Relation> toReturn = new LinkedList<Relation>();
+		List<Relation> toReturn = new LinkedList<>();
 		
 		for(AbstractJavaStructure struct: set) {
 			if(struct.equals(this.struct))

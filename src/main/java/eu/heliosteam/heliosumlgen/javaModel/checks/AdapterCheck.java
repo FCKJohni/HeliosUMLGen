@@ -14,7 +14,7 @@ public class AdapterCheck implements IPatternCheck {
 
 	@Override
 	public List<IPattern> check(JavaModel model) {
-		List<IPattern> toReturn = new LinkedList<IPattern>();
+		List<IPattern> toReturn = new LinkedList<>();
 		
 		for(AbstractJavaStructure struct: model.getStructures()) {
 			if( !(struct instanceof JavaClass))

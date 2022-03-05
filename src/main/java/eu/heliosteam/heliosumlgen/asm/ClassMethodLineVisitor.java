@@ -5,7 +5,7 @@ import org.objectweb.asm.MethodVisitor;
 
 public class ClassMethodLineVisitor extends MethodVisitor {
 	
-	private MethodCallGroup method;
+	private final MethodCallGroup method;
 	
 	public ClassMethodLineVisitor(int api, MethodVisitor cv, MethodCallGroup method, JavaModel model) {
 		super(api, cv);

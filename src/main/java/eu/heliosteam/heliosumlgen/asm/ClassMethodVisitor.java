@@ -10,8 +10,8 @@ import java.util.List;
 
 public class ClassMethodVisitor extends ClassVisitor {
 
-	private String className;
-	private JavaModel model;
+	private final String className;
+	private final JavaModel model;
 
 	public ClassMethodVisitor(int api, ClassVisitor decorated, String className, JavaModel model) {
 		super(api, decorated);

@@ -1,8 +1,8 @@
 package eu.heliosteam.heliosumlgen.asm;
 
 public class QualifiedMethod {
-	public String methodName;
-	public String methodDesc;
+	public final String methodName;
+	public final String methodDesc;
 
 	public QualifiedMethod(String methodName, String methodArgs) {
 		this.methodName = methodName;
@@ -33,11 +33,8 @@ public class QualifiedMethod {
 		} else if (!methodDesc.equals(other.methodDesc))
 			return false;
 		if (methodName == null) {
-			if (other.methodName != null)
-				return false;
-		} else if (!methodName.equals(other.methodName))
-			return false;
-		return true;
+			return other.methodName == null;
+		} else return methodName.equals(other.methodName);
 	}
 	
 }

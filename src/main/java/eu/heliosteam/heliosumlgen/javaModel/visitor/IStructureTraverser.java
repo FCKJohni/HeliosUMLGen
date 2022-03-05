@@ -2,5 +2,5 @@ package eu.heliosteam.heliosumlgen.javaModel.visitor;
 
 public interface IStructureTraverser {
 
-	public void accept(IStructureVisitor v);
+	void accept(IStructureVisitor v);
 }

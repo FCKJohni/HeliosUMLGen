@@ -1,22 +1,20 @@
 package eu.heliosteam.heliosumlgen;
 
-import eu.heliosteam.heliosumlgen.asm.QualifiedMethod;
-import eu.heliosteam.heliosumlgen.javaModel.visitor.ISequenceVisitor;
 import eu.heliosteam.heliosumlgen.javaModel.visitor.IUMLVisitor;
-import eu.heliosteam.heliosumlgen.javaModel.visitor.SDSequenceVisitor;
 import eu.heliosteam.heliosumlgen.javaModel.visitor.UMLDotVisitor;
+import guru.nidi.graphviz.engine.Format;
+import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.model.MutableGraph;
+import guru.nidi.graphviz.parse.Parser;
 import org.apache.commons.cli.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 
 public class HeliosUMLGen {
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException {
 
         Options options = new Options();
 
@@ -32,8 +30,14 @@ public class HeliosUMLGen {
         packages.setArgs(Option.UNLIMITED_VALUES);
         options.addOption(packages);
 
-        Option name = new Option("s", "short", false, "Whether or not to use long Class names");
+        Option name = new Option("sn", "short", false, "Whether or not to use long Class names");
         options.addOption(name);
+
+        Option silent = new Option("sv", "silentVisibility", false, "Whether or not to display Visibility");
+        options.addOption(silent);
+
+        Option silentType = new Option("st", "silentType", false, "Whether or not to display Types");
+        options.addOption(silentType);
 
         CommandLineParser commandLineParser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
@@ -51,7 +55,7 @@ public class HeliosUMLGen {
         String typeString = commandLine.getOptionValue("type");
         JavaModelClassVisitor visitor;
         if (typeString.equals("UML")) {
-            Set<String> classesToVisit = new HashSet<String>(List.of(commandLine.getOptionValues("classes")));
+            Set<String> classesToVisit = new HashSet<>(List.of(commandLine.getOptionValues("classes")));
             if (commandLine.hasOption("packages")) {
                 for (String s : commandLine.getOptionValues("packages")) {
                     classesToVisit.addAll(getClasses(s));
@@ -61,10 +65,22 @@ public class HeliosUMLGen {
             visitor = new JavaModelClassVisitor(classesToVisit);
             visitor.buildUMLModelDefault();
             out = new FileOutputStream("output.txt");
-            IUMLVisitor umlVisitor = new UMLDotVisitor(out, visitor.getModel(), commandLine.hasOption("short"));
+            IUMLVisitor umlVisitor = new UMLDotVisitor(out, visitor.getModel(), commandLine.hasOption("short"), commandLine.hasOption("silentVisibility"), commandLine.hasOption("silentType"));
             visitor.getModel().accept(umlVisitor);
+            HeliosLogger.success("UML Model has been generated to output.txt");
+            HeliosLogger.warn("Attempting to generate Graphviz Image");
+            try {
+                FileInputStream stream = new FileInputStream("output.txt");
+                MutableGraph graph = new Parser().read(stream);
+                Graphviz.fromGraph(graph).width(700).render(Format.PNG).toFile(new File("output.png"));
+                HeliosLogger.success("Successfully generated Graphviz Image [output.png]");
+            }catch (Exception e){
+                HeliosLogger.error("Failed generating Graphviz Image");
+                e.printStackTrace();
+            }
+
         } else {
-            System.out.println("Not a valid diagram type. Valid Types: UML");
+            HeliosLogger.error("Not a valid diagram Type. Valid Types are: UML");
         }
     }
 

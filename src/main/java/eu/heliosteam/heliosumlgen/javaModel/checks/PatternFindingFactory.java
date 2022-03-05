@@ -1,5 +1,6 @@
 package eu.heliosteam.heliosumlgen.javaModel.checks;
 
+import eu.heliosteam.heliosumlgen.HeliosLogger;
 import eu.heliosteam.heliosumlgen.JsonConfig;
 import eu.heliosteam.heliosumlgen.javaModel.visitor.IStructureVisitor;
 import eu.heliosteam.heliosumlgen.javaModel.visitor.SingletonVisitor;
@@ -8,12 +9,12 @@ import java.util.*;
 
 public class PatternFindingFactory {
 
-	static Map<String, Class<? extends IPatternCheck>> patterns;
-	static Map<String, Class<? extends IStructureVisitor>> visitors;
+	static final Map<String, Class<? extends IPatternCheck>> patterns;
+	static final Map<String, Class<? extends IStructureVisitor>> visitors;
 	
 	static {
-		patterns = new HashMap<String, Class<? extends IPatternCheck>>();
-		visitors = new HashMap<String, Class<? extends IStructureVisitor>>();
+		patterns = new HashMap<>();
+		visitors = new HashMap<>();
 		
 		patterns.put("Decorator-Detection", DecoratorCheck.class);
 		patterns.put("Adapter-Detection", AdapterCheck.class);
@@ -23,7 +24,7 @@ public class PatternFindingFactory {
 	}
 	
 	public static List<IPatternCheck> getPatternChecks() {
-		List<IPatternCheck> toReturn = new LinkedList<IPatternCheck>();
+		List<IPatternCheck> toReturn = new LinkedList<>();
 
 		toReturn.add(new AdapterCheck());
 		toReturn.add(new DecoratorCheck());
@@ -31,10 +32,10 @@ public class PatternFindingFactory {
 		
 		return toReturn;
 	}
-	
+
 	public static List<IPatternCheck> getPatternChecks(JsonConfig config) {
-		List<IPatternCheck> toReturn = new LinkedList<IPatternCheck>();
-		
+		List<IPatternCheck> toReturn = new LinkedList<>();
+
 		List<String> phases = Arrays.asList(config.Phases);
 
 		for(String s: patterns.keySet()) {
@@ -42,26 +43,26 @@ public class PatternFindingFactory {
 				try {
 					toReturn.add(patterns.get(s).newInstance());
 				} catch (InstantiationException | IllegalAccessException e) {
-					System.out.println("Invalid IPatternCheck Class");
+					HeliosLogger.error("Invalid IPatternCheck");
 					e.printStackTrace();
 					System.exit(0);
 				}
 			}
 		}
-		
+
 		return toReturn;
 	}
-	
+
 	public static List<IStructureVisitor> getStructureVisitors() {
-		List<IStructureVisitor> toReturn = new LinkedList<IStructureVisitor>();
+		List<IStructureVisitor> toReturn = new LinkedList<>();
 		
 		toReturn.add(new SingletonVisitor());
 		
 		return toReturn;
 	}
-	
+
 	public static List<IStructureVisitor> getStructureVisitors(JsonConfig config) {
-		List<IStructureVisitor> toReturn = new LinkedList<IStructureVisitor>();
+		List<IStructureVisitor> toReturn = new LinkedList<>();
 		List<String> phases = Arrays.asList(config.Phases);
 		for(String s: visitors.keySet()) {
 			if(phases.contains(s)) {
@@ -70,13 +71,13 @@ public class PatternFindingFactory {
 					vis.setSettings(config);
 					toReturn.add(vis);
 				} catch (InstantiationException | IllegalAccessException e) {
-					System.out.println("Invalid IPatternCheck Class");
+					HeliosLogger.error("Invalid IPatternCheck");
 					e.printStackTrace();
 					System.exit(0);
 				}
 			}
 		}
-		
+
 		return toReturn;
 	}
 }

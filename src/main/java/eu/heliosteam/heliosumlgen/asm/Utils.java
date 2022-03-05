@@ -27,7 +27,7 @@ public class Utils {
 	}
 
 	public static List<IModifier> getModifiers(int access) {
-		List<IModifier> toReturn = new LinkedList<IModifier>();
+		List<IModifier> toReturn = new LinkedList<>();
 
 		if ((access & Opcodes.ACC_STATIC) != 0) {
 			toReturn.add(new StaticModifier());
@@ -64,7 +64,7 @@ public class Utils {
 	}
 
 	public static List<AbstractJavaStructure> getInstanceOrJavaStructures(JavaModel model, String[] names) {
-		List<AbstractJavaStructure> toReturn = new LinkedList<AbstractJavaStructure>();
+		List<AbstractJavaStructure> toReturn = new LinkedList<>();
 
 		for (String name : names) {
 			toReturn.add(getInstanceOrJavaStructure(model, name));
@@ -74,7 +74,7 @@ public class Utils {
 	}
 
 	public static String getCleanName(String name) {
-		return name.replaceAll("\\/", ".");
+		return name.replaceAll("/", ".");
 	}
 
 	public static String[] getCleanNames(String[] names) {
@@ -94,7 +94,7 @@ public class Utils {
 			return new String[0];
 		}
 
-		ArrayList<String> toReturn = new ArrayList<String>();
+		ArrayList<String> toReturn = new ArrayList<>();
 		
 		for (String s : split[1].split(";")) {
 			if (s.equals(">"))
@@ -110,7 +110,7 @@ public class Utils {
 	}
 
 	public static List<String> getListOfArgs(String desc) {
-		List<String> toReturn = new LinkedList<String>();
+		List<String> toReturn = new LinkedList<>();
 		Type[] args = Type.getArgumentTypes(desc);
 
 		for (Type t : args) {

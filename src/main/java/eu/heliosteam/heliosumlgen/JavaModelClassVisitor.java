@@ -2,53 +2,43 @@ package eu.heliosteam.heliosumlgen;
 
 import eu.heliosteam.heliosumlgen.asm.*;
 import eu.heliosteam.heliosumlgen.javaModel.JavaModel;
-import eu.heliosteam.heliosumlgen.javaModel.checks.IPatternCheck;
 import eu.heliosteam.heliosumlgen.javaModel.checks.PatternFindingFactory;
-import eu.heliosteam.heliosumlgen.javaModel.visitor.IStructureVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 import java.util.Set;
 
 public class JavaModelClassVisitor {
 
-	public Set<String> classes;
+	public final Set<String> classes;
 
-	private JavaModel model;
-	private String classSearch;
-	private QualifiedMethod methodSearch;
-	private int depth;
-	
+	private final JavaModel model;
+
 
 	public JavaModelClassVisitor(Set<String> classes) {
-		this(classes, null, null, 0);
+		this(classes, null);
 	}
 
 	public JavaModelClassVisitor(String classSearch, QualifiedMethod methodSearch, int depth) {
-		this(null, classSearch, methodSearch, depth);
+		this(null, classSearch);
 	}
 	
-	public JavaModelClassVisitor(Set<String> classes, String classSearch, QualifiedMethod methodSearch, int depth) {
+	public JavaModelClassVisitor(Set<String> classes, String classSearch) {
 		this.classes = classes;
 
 		this.model = new JavaModel(classes);
 
-		this.classSearch = classSearch;
-		this.methodSearch = methodSearch;
-		this.depth = depth;
 	}
 
-	public void buildUMLModelDefault() throws IOException{
+	public void buildUMLModelDefault() {
 		buildUMLModelOnly();
 		model.finalize(PatternFindingFactory.getPatternChecks(), PatternFindingFactory.getStructureVisitors());
 	}
 	
 	public void buildUMLModelOnly() {
-		System.out.println("Building UML Model");
+		HeliosLogger.success("Building UML Model ~HeliosTeam");
 		for (String className : this.classes) {
 			try {
 				ClassReader reader = new ClassReader(className); 
@@ -58,7 +48,7 @@ public class JavaModelClassVisitor {
 				
 				reader.accept(methodVisitor, ClassReader.EXPAND_FRAMES);
 			} catch (IOException e) {
-				System.out.println("Class not Found: " + className);
+				HeliosLogger.error("Class not found : " + className);
 				e.printStackTrace();
 				System.exit(1);
 			}

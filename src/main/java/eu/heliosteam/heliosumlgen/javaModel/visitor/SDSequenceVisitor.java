@@ -13,10 +13,10 @@ import java.util.Set;
 
 public class SDSequenceVisitor implements ISequenceVisitor {
 
-	private String className;
-	private QualifiedMethod method;
-	private int depth;
-	private OutputStream out;
+	private final String className;
+	private final QualifiedMethod method;
+	private final int depth;
+	private final OutputStream out;
 	
 	public SDSequenceVisitor(String className, QualifiedMethod method, int depth, OutputStream out) {
 		this.className = className;
@@ -33,16 +33,14 @@ public class SDSequenceVisitor implements ISequenceVisitor {
 		if(element == null ||  !(element instanceof JavaMethod)) {
 			return;
 		}
-		
-		JavaMethod method = (JavaMethod)element;
-		
-		Set<String> objects = new HashSet<String>();
-		List<String> sdCalls = new ArrayList<String>();
+
+		Set<String> objects = new HashSet<>();
+		List<String> sdCalls = new ArrayList<>();
 		
 		
 		objects.add(className.replace(".", "\\."));
 		
-		addCalls(this.depth, objects, sdCalls, method);
+		addCalls(this.depth, objects, sdCalls, (JavaMethod)element);
 		
 		for(String s: objects) {
 			out.write(String.format("%s:%s[a]\n", s,s).getBytes());

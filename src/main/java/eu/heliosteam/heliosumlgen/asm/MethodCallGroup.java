@@ -5,14 +5,14 @@ import java.util.List;
 
 public class MethodCallGroup {
 	
-	public String classCaller;
-	public QualifiedMethod method;
-	public List<MethodCallLine> lines;
+	public final String classCaller;
+	public final QualifiedMethod method;
+	public final List<MethodCallLine> lines;
 	
 	public MethodCallGroup(String classCaller, QualifiedMethod method) {
 		this.classCaller = classCaller;
 		this.method = method;
-		lines = new LinkedList<MethodCallLine>();
+		lines = new LinkedList<>();
 	}
 	
 	public void addLine(MethodCallLine line) {

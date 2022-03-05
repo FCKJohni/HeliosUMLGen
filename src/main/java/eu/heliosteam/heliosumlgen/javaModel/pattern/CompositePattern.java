@@ -13,9 +13,9 @@ import java.util.Set;
 
 public class CompositePattern implements IPattern {
 
-	public AbstractJavaStructure component;
-	Set<AbstractJavaStructure> composites;
-	Set<AbstractJavaStructure> leaves;
+	public final AbstractJavaStructure component;
+	final Set<AbstractJavaStructure> composites;
+	final Set<AbstractJavaStructure> leaves;
 	
 	public static final String COMPONENT = "Component";
 	public static final String LEAF = "Leaf";
@@ -23,8 +23,8 @@ public class CompositePattern implements IPattern {
 			
 	public CompositePattern(AbstractJavaStructure component) {
 		this.component = component;
-		this.composites = new HashSet<AbstractJavaStructure>();
-		this.leaves = new HashSet<AbstractJavaStructure>();
+		this.composites = new HashSet<>();
+		this.leaves = new HashSet<>();
 	}
 	
 	@Override
@@ -41,7 +41,7 @@ public class CompositePattern implements IPattern {
 
 	@Override
 	public List<AbstractJavaStructure> getInvolvedStructes() {
-		List<AbstractJavaStructure> toReturn = new LinkedList<AbstractJavaStructure>();
+		List<AbstractJavaStructure> toReturn = new LinkedList<>();
 		
 		toReturn.addAll(leaves);
 		toReturn.addAll(composites);
@@ -57,8 +57,7 @@ public class CompositePattern implements IPattern {
 
 	@Override
 	public List<Relation> getTopLevelRelations() {
-		List<Relation> toReturn = new LinkedList<Relation>();
-		return toReturn;
+		return new LinkedList<Relation>();
 	}
 
 	@Override

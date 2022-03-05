@@ -13,7 +13,7 @@ import java.util.List;
 
 public class SingletonPattern implements IPattern {
 
-	JavaClass struct;
+	final JavaClass struct;
 	public static final String STEREOTYPE = "singleton";
 	
 	public SingletonPattern(JavaClass struct) {
@@ -30,7 +30,7 @@ public class SingletonPattern implements IPattern {
 
 	@Override
 	public List<AbstractJavaStructure> getInvolvedStructes() {
-		List<AbstractJavaStructure> toReturn = new ArrayList<AbstractJavaStructure>(1);
+		List<AbstractJavaStructure> toReturn = new ArrayList<>(1);
 		toReturn.add(struct);
 		return toReturn;
 	}
@@ -42,7 +42,7 @@ public class SingletonPattern implements IPattern {
 
 	@Override
 	public List<Relation> getTopLevelRelations() {
-		return new LinkedList<Relation>();
+		return new LinkedList<>();
 	}
 
 	@Override

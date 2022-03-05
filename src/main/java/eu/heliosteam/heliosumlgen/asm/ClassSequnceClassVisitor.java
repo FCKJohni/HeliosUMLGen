@@ -8,18 +8,17 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class ClassSequnceClassVisitor extends ClassDeclarationVisitor {
 
-	private JavaModel model;
+	private final JavaModel model;
 	private Set<QualifiedMethod> methodsToFind;
-	private int depth;
-	private SequenceStructure seqStructure;
-	private String className;
+	private final int depth;
+	private final SequenceStructure seqStructure;
+	private final String className;
 	
 	public ClassSequnceClassVisitor(int api, JavaModel model, String className, Set<QualifiedMethod> methodsToFind, int depth, SequenceStructure seqStructure) {
 		super(api, model);
@@ -29,13 +28,6 @@ public class ClassSequnceClassVisitor extends ClassDeclarationVisitor {
 		this.depth = depth;
 		this.seqStructure = seqStructure;
 		this.className = className;
-	}
-
-	public ClassSequnceClassVisitor(int asm5, JavaModel model2, String className, QualifiedMethod method, int depth2,
-			SequenceStructure seqStructure2) {
-		this(asm5, model2, className, (Set<QualifiedMethod>)null, depth2, seqStructure2);
-		this.methodsToFind = new HashSet<QualifiedMethod>();
-		methodsToFind.add(method);
 	}
 
 	@Override

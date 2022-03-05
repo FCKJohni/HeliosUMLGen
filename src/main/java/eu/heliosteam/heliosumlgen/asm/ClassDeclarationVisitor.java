@@ -7,7 +7,7 @@ import org.objectweb.asm.ClassVisitor;
 
 public class ClassDeclarationVisitor extends ClassVisitor {
 
-	private JavaModel model;
+	private final JavaModel model;
 
 	public ClassDeclarationVisitor(int api, JavaModel model) {
 		super(api);

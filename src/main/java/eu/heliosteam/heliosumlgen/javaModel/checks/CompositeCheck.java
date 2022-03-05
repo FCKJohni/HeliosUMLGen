@@ -12,13 +12,13 @@ import java.util.Set;
 
 public class CompositeCheck implements IPatternCheck {
 
-	Set<AbstractJavaStructure> set = new HashSet<AbstractJavaStructure>();
+	final Set<AbstractJavaStructure> set = new HashSet<>();
 
 	@Override
 	public List<IPattern> check(JavaModel model) {
-		List<IPattern> toReturn = new LinkedList<IPattern>();
+		List<IPattern> toReturn = new LinkedList<>();
 		
-		List<AbstractJavaStructure> leafPossibility = new LinkedList<AbstractJavaStructure>();
+		List<AbstractJavaStructure> leafPossibility = new LinkedList<>();
 		
 		for(AbstractJavaStructure struct: model.getStructures()) {
 			set.clear();
@@ -57,7 +57,7 @@ public class CompositeCheck implements IPatternCheck {
 		List<AbstractJavaElement> addList = struct.getElementByName("add");
 		List<AbstractJavaElement> removeList = struct.getElementByName("remove");
 		
-		Set<AbstractJavaStructure> castedTo = new HashSet<AbstractJavaStructure>();
+		Set<AbstractJavaStructure> castedTo = new HashSet<>();
 		
 		boolean passing = false;
 		for(AbstractJavaElement add: addList) {
@@ -87,35 +87,7 @@ public class CompositeCheck implements IPatternCheck {
 		}
 		
 		return passing;
-		/*
-		for(AbstractJavaElement ele: struct.subElements) {
-			if(!(ele instanceof JavaMethod)) {
-				continue;
-			}
-			JavaMethod meth = (JavaMethod) ele;
-			
-			if(meth.name.equalsIgnoreCase("add") && meth.arguments.size() == 1) {				
-				AbstractJavaStructure arg = meth.arguments.get(0);
-				if (struct.isCastableTo(arg)) {
-					for(AbstractJavaElement eleIn: struct.subElements) {
-						if(!(eleIn instanceof JavaMethod)) {
-							continue;
-						}
-						JavaMethod methIn = (JavaMethod) eleIn;
-						if(methIn.name.equalsIgnoreCase("remove")  && methIn.arguments.size() == 1) {
-							AbstractJavaStructure argIn = methIn.arguments.get(0);
-							
-							if(arg.equals(argIn)){
-								set.add(arg);
-								hasMethods = true;
-							}
-						}
-					}
-				}
-			}
-			
-		}*/
-		
+
 	}
 
 	public CompositePattern containsPattern(List<IPattern> patterns, AbstractJavaStructure to) {

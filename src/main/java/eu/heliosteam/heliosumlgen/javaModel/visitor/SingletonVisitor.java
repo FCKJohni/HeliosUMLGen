@@ -19,7 +19,7 @@ public class SingletonVisitor implements IStructureVisitor {
 
 	@Override
 	public List<IPattern> visit(JavaModel model, AbstractJavaStructure struct) {
-		List<IPattern> toReturn = new LinkedList<IPattern>();
+		List<IPattern> toReturn = new LinkedList<>();
 		
 		if(struct instanceof JavaInterface) {
 			// Do nothing
@@ -36,15 +36,15 @@ public class SingletonVisitor implements IStructureVisitor {
 	private boolean checkForStaticInstance(AbstractJavaStructure structure) {
 		for(AbstractJavaElement element: structure.subElements) {
 			if(element.name.equalsIgnoreCase("instance"))
-				if(checkForModifier(element.modifiers, StaticModifier.class))
+				if(checkForModifier(element.modifiers))
 					return true;
 		}
 		return false;
 	}
 	
-	private boolean checkForModifier(List<IModifier> modifiers, Class<?> c) {
+	private boolean checkForModifier(List<IModifier> modifiers) {
 		for(IModifier mod: modifiers)
-			if(c.isInstance(mod))
+			if(StaticModifier.class.isInstance(mod))
 				return true;
 		
 		return false;
@@ -62,13 +62,10 @@ public class SingletonVisitor implements IStructureVisitor {
 		if(method.arguments != null && method.arguments.size() != 0)
 			return false;
 		
-		if(!checkForModifier(method.modifiers, StaticModifier.class))
+		if(!checkForModifier(method.modifiers))
 			return false;
-		
-		if(method.type.equals(structure))
-			return true;
 
-		return false;			
+		return method.type.equals(structure);
 	}
 
 	@Override

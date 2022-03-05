@@ -1,8 +1,8 @@
 package eu.heliosteam.heliosumlgen.javaModel;
 
 public class Relation {
-	public AbstractJavaThing base;
-	public AbstractJavaThing other;
+	public final AbstractJavaThing base;
+	public final AbstractJavaThing other;
 
 	public Relation(AbstractJavaThing base, AbstractJavaThing other) {
 		this.base = base;
@@ -33,10 +33,7 @@ public class Relation {
 		} else if (!base.equals(other.base))
 			return false;
 		if (this.other == null) {
-			if (other.other != null)
-				return false;
-		} else if (!this.other.equals(other.other))
-			return false;
-		return true;
+			return other.other == null;
+		} else return this.other.equals(other.other);
 	}
 }

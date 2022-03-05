@@ -12,9 +12,9 @@ import java.util.List;
 
 public class AdapterPattern implements IPattern {
 	
-	AbstractJavaStructure from;
-	AbstractJavaStructure to;
-	JavaClass adapter;
+	final AbstractJavaStructure from;
+	final AbstractJavaStructure to;
+	final JavaClass adapter;
 	public static final String TARGET = "target";
 	public static final String ADAPTEE = "adaptee";
 	public static final String ADAPTER = "adapter";
@@ -42,7 +42,7 @@ public class AdapterPattern implements IPattern {
 
 	@Override
 	public List<AbstractJavaStructure> getInvolvedStructes() {
-		List<AbstractJavaStructure> toReturn = new LinkedList<AbstractJavaStructure>();
+		List<AbstractJavaStructure> toReturn = new LinkedList<>();
 		
 		toReturn.add(from);
 		toReturn.add(to);
@@ -58,7 +58,7 @@ public class AdapterPattern implements IPattern {
 
 	@Override
 	public List<Relation> getTopLevelRelations() {
-		List<Relation> toReturn = new LinkedList<Relation>();
+		List<Relation> toReturn = new LinkedList<>();
 		
 		toReturn.add(new Relation(adapter, from));
 		

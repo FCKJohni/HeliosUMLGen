@@ -8,24 +8,19 @@ import java.util.Set;
 public class SequenceStructure {
 	
 	private Map<String,Set<QualifiedMethod>> classMethod;
-	private Map<String,Set<QualifiedMethod>> visitedMethods;
-	
+	private final Map<String,Set<QualifiedMethod>> visitedMethods;
+
 	public SequenceStructure() {
-		this.classMethod = new HashMap<String,Set<QualifiedMethod>>();
-		this.visitedMethods = new HashMap<String,Set<QualifiedMethod>>();
+		this.classMethod = new HashMap<>();
+		this.visitedMethods = new HashMap<>();
 	}
-	
+
 	public void addMethod(String clazz, QualifiedMethod method) {
 		if(visitedMethod(clazz, method))
 			return;
-		
-		Set<QualifiedMethod> methods = classMethod.get(clazz);
-		
-		if(methods == null) {
-			methods = new HashSet<QualifiedMethod>();
-			classMethod.put(clazz, methods);
-		}
-		
+
+		Set<QualifiedMethod> methods = classMethod.computeIfAbsent(clazz, k -> new HashSet<>());
+
 		methods.add(method);
 	}
 	
@@ -43,7 +38,7 @@ public class SequenceStructure {
 				methods.addAll(classMethod.get(s));
 			}
 		}
-		this.classMethod = new HashMap<String, Set<QualifiedMethod>>();
+		this.classMethod = new HashMap<>();
 	}
 	
 	public boolean visitedMethod(String clazz, QualifiedMethod method) {

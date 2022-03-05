@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class AbstractJavaThing implements IUMLTraverser {
 	
 
-	public String name;
+	public final String name;
 	public IAccessModifier access;
 	public List<IModifier> modifiers;
 
@@ -21,7 +21,7 @@ public abstract class AbstractJavaThing implements IUMLTraverser {
 	}
 
 	public AbstractJavaThing(String cleanName) {
-		this(cleanName, null, new LinkedList<IModifier>());
+		this(cleanName, null, new LinkedList<>());
 	}
 	
 	@Override
@@ -42,10 +42,7 @@ public abstract class AbstractJavaThing implements IUMLTraverser {
 			return false;
 		AbstractJavaThing other = (AbstractJavaThing) obj;
 		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
+			return other.name == null;
+		} else return name.equals(other.name);
 	}
 }

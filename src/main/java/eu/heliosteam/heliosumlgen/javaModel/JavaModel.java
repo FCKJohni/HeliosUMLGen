@@ -1,6 +1,7 @@
 package eu.heliosteam.heliosumlgen.javaModel;
 
 
+import eu.heliosteam.heliosumlgen.HeliosLogger;
 import eu.heliosteam.heliosumlgen.asm.MethodCallGroup;
 import eu.heliosteam.heliosumlgen.asm.MethodCallLine;
 import eu.heliosteam.heliosumlgen.asm.Utils;
@@ -15,21 +16,21 @@ import java.util.*;
 
 public class JavaModel implements IUMLTraverser, ISquenceTraverser, IStructureTraverser {
 
-	HashMap<String, AbstractJavaStructure> map;
-	List<MethodCallGroup> methodGroups;
-	Set<String> includedClasses;
+	final HashMap<String, AbstractJavaStructure> map;
+	final List<MethodCallGroup> methodGroups;
+	final Set<String> includedClasses;
 	List<String> exclusion;
 	
-	List<IPattern> patterns;
+	final List<IPattern> patterns;
 
 	public JavaModel(Set<String> includedClasses) {
-		this.map = new HashMap<String, AbstractJavaStructure>();
+		this.map = new HashMap<>();
 
 		this.includedClasses = includedClasses;
 		
-		this.methodGroups = new LinkedList<MethodCallGroup>();
+		this.methodGroups = new LinkedList<>();
 		
-		this.patterns = new LinkedList<IPattern>();
+		this.patterns = new LinkedList<>();
 	}
 	
 	public void setExclusionList(List<String> exclusion) {
@@ -49,7 +50,7 @@ public class JavaModel implements IUMLTraverser, ISquenceTraverser, IStructureTr
 	}
 
 	public List<Relation> getChildParrentIncludedRelations() {
-		List<Relation> relations = new LinkedList<Relation>();
+		List<Relation> relations = new LinkedList<>();
 		for (AbstractJavaStructure struct : map.values()) {
 			if (struct instanceof JavaClass) {
 				if (isStructureIncluded(struct.name)) {
@@ -66,7 +67,7 @@ public class JavaModel implements IUMLTraverser, ISquenceTraverser, IStructureTr
 	}
 
 	public List<Relation> getIncludedInterfaceRelations() {
-		List<Relation> relations = new LinkedList<Relation>();
+		List<Relation> relations = new LinkedList<>();
 		for (AbstractJavaStructure struct : map.values()) {
 			if (isStructureIncluded(struct.name)) {
 				for (AbstractJavaStructure other : struct.implement) {
@@ -80,7 +81,7 @@ public class JavaModel implements IUMLTraverser, ISquenceTraverser, IStructureTr
 	}
 
 	public List<Relation> getIncludedUsesRelations() {
-		Set<Relation> relations = new HashSet<Relation>();
+		Set<Relation> relations = new HashSet<>();
 		for (AbstractJavaStructure struct : map.values()) {
 			if (isStructureIncluded(struct.name)) {
 				for (AbstractJavaElement other : struct.subElements) {
@@ -99,11 +100,11 @@ public class JavaModel implements IUMLTraverser, ISquenceTraverser, IStructureTr
 			}
 
 		}
-		return new ArrayList<Relation>(relations);
+		return new ArrayList<>(relations);
 	}
 
 	public List<Relation> getIncludedAssociationReltiations() {
-		Set<Relation> relations = new HashSet<Relation>();
+		Set<Relation> relations = new HashSet<>();
 		for (AbstractJavaStructure struct : map.values()) {
 			if (isStructureIncluded(struct.name)) {
 				for (AbstractJavaElement other : struct.subElements) {
@@ -115,7 +116,7 @@ public class JavaModel implements IUMLTraverser, ISquenceTraverser, IStructureTr
 				}
 			}
 		}
-		return new ArrayList<Relation>(relations);
+		return new ArrayList<>(relations);
 	}
 	
 	public Collection<AbstractJavaStructure> getStructures() {
@@ -138,7 +139,7 @@ public class JavaModel implements IUMLTraverser, ISquenceTraverser, IStructureTr
 				if (otherMethod == null) {
 					boolean isConstuctor = other.name.equals(line.method.methodName);
 					
-					otherMethod = new JavaMethod(other, line.method.methodName,  new PublicModifier(), new LinkedList<IModifier>(), Utils.getInstanceOrJavaStructure(this, line.returnType), Utils.getInstanceOrJavaStructures(this, Utils.getListOfArgs(line.method.methodDesc).toArray(new String[0])), isConstuctor);
+					otherMethod = new JavaMethod(other, line.method.methodName,  new PublicModifier(), new LinkedList<>(), Utils.getInstanceOrJavaStructure(this, line.returnType), Utils.getInstanceOrJavaStructures(this, Utils.getListOfArgs(line.method.methodDesc).toArray(new String[0])), isConstuctor);
 					other.addSubElement(otherMethod);
 				}
 				
@@ -156,14 +157,14 @@ public class JavaModel implements IUMLTraverser, ISquenceTraverser, IStructureTr
 	
 	private void runStructVisitors(List<IStructureVisitor> structVisitors) {
 		for(IStructureVisitor v: structVisitors) {
-			System.out.println("Running Structure Visitor Class: " + v.getClass().getName());
+			HeliosLogger.info("Running Structure Visitor on Class : " + v.getClass().getName());
 			this.accept(v);
 		}
 	}
 	
 	private void checkForPatterns(List<IPatternCheck> patterns) {		
 		for(IPatternCheck check: patterns) {
-			System.out.println("Running Pattern Check Class: " + check.getClass().getName());
+			HeliosLogger.info("Running Pattern Check on Class : " + check.getClass().getName());
 			List<IPattern> list = check.check(this);
 			this.patterns.addAll(list);
 		}
@@ -171,8 +172,8 @@ public class JavaModel implements IUMLTraverser, ISquenceTraverser, IStructureTr
 
 	@Override
 	public void accept(IUMLVisitor v) throws IOException {
-		System.out.println("Running IUMLVisitor: " + v.getClass().getName());
-		
+		HeliosLogger.info("Running IUMLVisitor on Class : " + v.getClass().getName());
+
 		v.visitStart();
 
 		for (String name : map.keySet()) {
@@ -199,7 +200,7 @@ public class JavaModel implements IUMLTraverser, ISquenceTraverser, IStructureTr
 	}
 	
 	public List<String> getStereotypes(AbstractJavaStructure struct) {
-		List<String> steros = new LinkedList<String>();
+		List<String> steros = new LinkedList<>();
 		
 		for(IPattern p: patterns) {
 			String s = p.getStereotype(struct);
@@ -216,9 +217,7 @@ public class JavaModel implements IUMLTraverser, ISquenceTraverser, IStructureTr
 	
 	public boolean isStructureIncluded(String s) {
 		if(this.includedClasses.contains(s)) {
-			if(this.exclusion == null || !this.exclusion.contains(s)) {
-				return true;
-			}
+			return this.exclusion == null || !this.exclusion.contains(s);
 		}
 		
 		return false;
