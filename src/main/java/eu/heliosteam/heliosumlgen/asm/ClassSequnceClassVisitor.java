@@ -15,7 +15,7 @@ import java.util.Set;
 public class ClassSequnceClassVisitor extends ClassDeclarationVisitor {
 
 	private final JavaModel model;
-	private Set<QualifiedMethod> methodsToFind;
+	private final Set<QualifiedMethod> methodsToFind;
 	private final int depth;
 	private final SequenceStructure seqStructure;
 	private final String className;
@@ -67,7 +67,7 @@ public class ClassSequnceClassVisitor extends ClassDeclarationVisitor {
 		if(depth > 0)
 			try {
 				Map<String, Set<QualifiedMethod>> methods = seqStructure.getClassMethods();
-				seqStructure.vistedAll();
+				seqStructure.visitedAll();
 				for(String s: methods.keySet()) {
 					ClassReader reader = new ClassReader(s);
 					ClassVisitor decVisitor = new ClassSequnceClassVisitor(this.api, model, s, methods.get(s), this.depth - 1, seqStructure);

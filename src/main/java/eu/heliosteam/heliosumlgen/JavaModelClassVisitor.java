@@ -18,14 +18,6 @@ public class JavaModelClassVisitor {
 
 
 	public JavaModelClassVisitor(Set<String> classes) {
-		this(classes, null);
-	}
-
-	public JavaModelClassVisitor(String classSearch, QualifiedMethod methodSearch, int depth) {
-		this(null, classSearch);
-	}
-	
-	public JavaModelClassVisitor(Set<String> classes, String classSearch) {
 		this.classes = classes;
 
 		this.model = new JavaModel(classes);

@@ -2,8 +2,6 @@ package eu.heliosteam.heliosumlgen.javaModel;
 
 import eu.heliosteam.heliosumlgen.asm.QualifiedMethod;
 import eu.heliosteam.heliosumlgen.asm.Utils;
-import eu.heliosteam.heliosumlgen.javaModel.modifier.IAccessModifier;
-import eu.heliosteam.heliosumlgen.javaModel.modifier.IModifier;
 import eu.heliosteam.heliosumlgen.javaModel.visitor.IUMLVisitor;
 
 import java.io.IOException;
@@ -16,12 +14,7 @@ public abstract class AbstractJavaStructure extends AbstractJavaThing {
 	public final List<AbstractJavaElement> subElements;
 	public List<AbstractJavaStructure> implement;
 
-	public AbstractJavaStructure(String name, IAccessModifier access, List<IModifier> modifiers,
-								 List<AbstractJavaElement> subElements, List<AbstractJavaStructure> implement) {
-		super(name, access, modifiers);
-		this.subElements = subElements;
-		this.implement = implement;
-	}
+
 
 	public AbstractJavaStructure(String cleanName) {
 		super(cleanName);
@@ -32,7 +25,6 @@ public abstract class AbstractJavaStructure extends AbstractJavaThing {
 		this.subElements.add(element);
 	}
 
-	@Override
 	public void accept(IUMLVisitor v) throws IOException {
 
 		for (AbstractJavaElement element : subElements) {
@@ -128,14 +120,8 @@ public abstract class AbstractJavaStructure extends AbstractJavaThing {
 				struct.getSuperClasses(set);
 			}
 	}
-	
-	public <T extends AbstractJavaElement> List<T> getElementsOfType(Class<T> clazz) {
-		List<T> list = new LinkedList<>();
-		getElementsOfType(list, clazz);
-		return list;
-	}
-	
-	// This is checked via isInstance 
+
+	// This is checked via isInstance
 	@SuppressWarnings("unchecked")
 	protected <T extends AbstractJavaElement> void getElementsOfType(List<T> list, Class<T> clazz) {
 		for(AbstractJavaElement ele: subElements) {

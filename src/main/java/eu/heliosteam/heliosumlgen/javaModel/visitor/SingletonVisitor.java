@@ -1,6 +1,5 @@
 package eu.heliosteam.heliosumlgen.javaModel.visitor;
 
-import eu.heliosteam.heliosumlgen.JsonConfig;
 import eu.heliosteam.heliosumlgen.asm.QualifiedMethod;
 import eu.heliosteam.heliosumlgen.asm.Utils;
 import eu.heliosteam.heliosumlgen.javaModel.*;
@@ -13,33 +12,32 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SingletonVisitor implements IStructureVisitor {
-	
-	private boolean requireGetInstance = true;
-	
+
 
 	@Override
 	public List<IPattern> visit(JavaModel model, AbstractJavaStructure struct) {
 		List<IPattern> toReturn = new LinkedList<>();
-		
+
+		boolean requireGetInstance = true;
 		if(struct instanceof JavaInterface) {
 			// Do nothing
 		}
-		else if(checkForStaticInstance(struct) && !requireGetInstance){
-			toReturn.add(new SingletonPattern((JavaClass)struct));
-		}else if(checkForGetInstance(model, struct)) {
-			toReturn.add(new SingletonPattern((JavaClass)struct));
+		else {
+			checkForStaticInstance(struct);
+			if(checkForGetInstance(model, struct)) {
+				toReturn.add(new SingletonPattern((JavaClass)struct));
+			}
 		}
 		
 		return toReturn;
 	}
 	
-	private boolean checkForStaticInstance(AbstractJavaStructure structure) {
+	private void checkForStaticInstance(AbstractJavaStructure structure) {
 		for(AbstractJavaElement element: structure.subElements) {
 			if(element.name.equalsIgnoreCase("instance"))
 				if(checkForModifier(element.modifiers))
-					return true;
+					return;
 		}
-		return false;
 	}
 	
 	private boolean checkForModifier(List<IModifier> modifiers) {
@@ -68,8 +66,4 @@ public class SingletonVisitor implements IStructureVisitor {
 		return method.type.equals(structure);
 	}
 
-	@Override
-	public void setSettings(JsonConfig config) {
-		requireGetInstance = config.Singleton_RequireGetInstance;
-	}
 }

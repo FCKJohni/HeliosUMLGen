@@ -39,9 +39,7 @@ public class DecoratorPattern implements IPattern {
 
 	@Override
 	public List<AbstractJavaStructure> getInvolvedStructes() {
-		List<AbstractJavaStructure> toReturn = new LinkedList<>();
-		toReturn.addAll(set);
-		return  toReturn;
+		return new LinkedList<>(set);
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package eu.heliosteam.heliosumlgen.javaModel.checks;
 
 
-import eu.heliosteam.heliosumlgen.JsonConfig;
 import eu.heliosteam.heliosumlgen.javaModel.*;
 import eu.heliosteam.heliosumlgen.javaModel.pattern.AdapterPattern;
 
@@ -10,7 +9,6 @@ import java.util.List;
 
 public class AdapterCheck implements IPatternCheck {
 
-	private int adaptedMethodCount;
 
 	@Override
 	public List<IPattern> check(JavaModel model) {
@@ -42,21 +40,19 @@ public class AdapterCheck implements IPatternCheck {
 	}
 	
 	private boolean checkMethodsForCallTo(List<AbstractJavaElement> subElements, AbstractJavaStructure arg) {
-		int counter = 0;
-		
+
 		for(AbstractJavaElement ele: subElements) {
 			if(ele instanceof JavaMethod) {
 				if(((JavaMethod) ele).isConstructor)
 					continue;
 				for(JavaMethod meth :((JavaMethod) ele).methodCalls) {
 					if(meth.owner.equals(arg)) {
-						counter++;
 						break;
 					}
 				}
 			}
 		}
-		return counter >= this.adaptedMethodCount;
+		return true;
 	}
 
 	public boolean hasFieldCatableTo(List<AbstractJavaElement> elements, AbstractJavaStructure to) {
@@ -87,11 +83,6 @@ public class AdapterCheck implements IPatternCheck {
 		}
 		
 		return supers == null ? implments : supers;
-	}
-
-	@Override
-	public void setSettings(JsonConfig config) {
-		this.adaptedMethodCount = config.Adapter_MethodDelegation;
 	}
 
 }

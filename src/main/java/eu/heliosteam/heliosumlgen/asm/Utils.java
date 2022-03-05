@@ -102,7 +102,7 @@ public class Utils {
 			toReturn.add(Type.getType(s + ";").getClassName());
 		}
 
-		return toReturn.toArray(new String[toReturn.size()]);
+		return toReturn.toArray(new String[0]);
 	}
 
 	public static String getReturnType(String desc) {

@@ -1,7 +1,6 @@
 package eu.heliosteam.heliosumlgen.javaModel.checks;
 
 
-import eu.heliosteam.heliosumlgen.JsonConfig;
 import eu.heliosteam.heliosumlgen.javaModel.*;
 import eu.heliosteam.heliosumlgen.javaModel.pattern.DecoratorPattern;
 
@@ -91,8 +90,4 @@ public class DecoratorCheck implements IPatternCheck {
 		return null;
 	}
 
-	@Override
-	public void setSettings(JsonConfig config) {
-		// TODO Decorator Settings
-	}
 }

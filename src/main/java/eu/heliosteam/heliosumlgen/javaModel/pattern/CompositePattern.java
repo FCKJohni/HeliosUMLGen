@@ -57,7 +57,7 @@ public class CompositePattern implements IPattern {
 
 	@Override
 	public List<Relation> getTopLevelRelations() {
-		return new LinkedList<Relation>();
+		return new LinkedList<>();
 	}
 
 	@Override

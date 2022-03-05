@@ -17,14 +17,6 @@ application {
     mainClass.set("eu.heliosteam.heliosumlgen.HeliosUMLGen")
 }
 
-tasks {
-    named<ShadowJar>("shadowJar") {
-        archiveBaseName.set("shadow")
-        mergeServiceFiles()
-        transform(GraalTransformer())
-    }
-}
-
 
 repositories {
     mavenCentral()
@@ -43,49 +35,3 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-slf4j18-impl:2.17.0")
 }
 
-class GraalTransformer : com.github.jengelman.gradle.plugins.shadow.transformers.Transformer {
-
-    @Internal
-    var patternSet: PatternSet = PatternSet().include("META-INF/truffle/language")
-    @Internal
-    var matchCount: Int = 0
-    @Internal
-    var result: StringBuilder = StringBuilder()
-    @Internal
-    var targetPath: String = ""
-
-    override fun getName(): String {
-        return "GraalTransformer"
-    }
-
-    override fun canTransformResource(element: FileTreeElement?): Boolean {
-        return patternSet.asSpec.isSatisfiedBy(element)
-    }
-
-    override fun transform(p0: TransformerContext?) {
-        val context: TransformerContext = p0!!
-        matchCount += 1
-        targetPath = context.path
-        val lines = context.`is`.bufferedReader().readLines().toMutableList()
-        lines.onEachIndexed  { index, s ->
-            run {
-                val replacement = lines[index].replace("language1", "language$matchCount")
-                lines[index] = replacement
-                result.append(replacement + "\n")
-            }
-        }
-    }
-
-    override fun hasTransformedResource(): Boolean { return matchCount > 0 }
-
-    override fun modifyOutputStream(p0: ZipOutputStream?, p1: Boolean) {
-        val outputStream: ZipOutputStream = p0!!
-        val entry: ZipEntry = ZipEntry(targetPath)
-        entry.time = TransformerContext.getEntryTimestamp(p1, entry.time)
-        outputStream.putNextEntry(entry)
-        outputStream.write(result.toString().toByteArray())
-        outputStream.closeEntry()
-    }
-
-
-}

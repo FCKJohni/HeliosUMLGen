@@ -2,12 +2,11 @@ package eu.heliosteam.heliosumlgen.javaModel;
 
 import eu.heliosteam.heliosumlgen.javaModel.modifier.IAccessModifier;
 import eu.heliosteam.heliosumlgen.javaModel.modifier.IModifier;
-import eu.heliosteam.heliosumlgen.javaModel.visitor.IUMLTraverser;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class AbstractJavaThing implements IUMLTraverser {
+public abstract class AbstractJavaThing{
 	
 
 	public final String name;

@@ -7,13 +7,8 @@ import java.util.Set;
 
 public class SequenceStructure {
 	
-	private Map<String,Set<QualifiedMethod>> classMethod;
-	private final Map<String,Set<QualifiedMethod>> visitedMethods;
-
-	public SequenceStructure() {
-		this.classMethod = new HashMap<>();
-		this.visitedMethods = new HashMap<>();
-	}
+	private Map<String,Set<QualifiedMethod>> classMethod = new HashMap<>();
+	private final Map<String,Set<QualifiedMethod>> visitedMethods = new HashMap<>();
 
 	public void addMethod(String clazz, QualifiedMethod method) {
 		if(visitedMethod(clazz, method))
@@ -28,7 +23,7 @@ public class SequenceStructure {
 		return classMethod;
 	}
 	
-	public void vistedAll() {
+	public void visitedAll() {
 		for(String s: classMethod.keySet()) {
 			Set<QualifiedMethod> methods = visitedMethods.get(s);
 			

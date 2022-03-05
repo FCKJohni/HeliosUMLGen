@@ -1,7 +1,6 @@
 package eu.heliosteam.heliosumlgen.javaModel.checks;
 
 
-import eu.heliosteam.heliosumlgen.JsonConfig;
 import eu.heliosteam.heliosumlgen.javaModel.*;
 import eu.heliosteam.heliosumlgen.javaModel.pattern.CompositePattern;
 
@@ -71,13 +70,10 @@ public class CompositeCheck implements IPatternCheck {
 		
 		for(AbstractJavaElement remove: removeList) {
 			if(remove instanceof JavaMethod  && ((JavaMethod)remove).arguments.size() == 1){
-				passing = true;
 				break;
 			}	
 		}
-		if(!passing)
-			return false;
-		
+
 		passing = false;
 		for(AbstractJavaStructure otherStruct: castedTo) {
 			if(struct.isCastableTo(otherStruct)) {
@@ -99,29 +95,5 @@ public class CompositeCheck implements IPatternCheck {
 		}
 		return null;
 	}
-	
-	private boolean checkForCollection(AbstractJavaStructure struct, JavaModel model) {
-		AbstractJavaStructure collection = model.getStructure("java.util.Collection");
-		
-		for(AbstractJavaElement ele: struct.getElementsOfType(JavaField.class)) {
-			if(ele instanceof JavaField) {
-				if(ele.type.isCastableTo(collection)) {
-					return true;
-				} else {
-					for(AbstractJavaStructure component: set) {
-						if(ele.type.isCastableTo(component)) {
-							return true;
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
 
-	@Override
-	public void setSettings(JsonConfig config) {
-		// TODO Auto-generated method stub
-		
-	}
 }

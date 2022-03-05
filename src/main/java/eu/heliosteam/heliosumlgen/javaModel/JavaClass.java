@@ -1,7 +1,5 @@
 package eu.heliosteam.heliosumlgen.javaModel;
 
-import eu.heliosteam.heliosumlgen.javaModel.modifier.IAccessModifier;
-import eu.heliosteam.heliosumlgen.javaModel.modifier.IModifier;
 import eu.heliosteam.heliosumlgen.javaModel.visitor.IUMLVisitor;
 
 import java.io.IOException;
@@ -11,11 +9,7 @@ import java.util.Set;
 public class JavaClass extends AbstractJavaStructure {
 	public AbstractJavaStructure superClass;
 
-	public JavaClass(String name, IAccessModifier access, List<IModifier> modifiers, List<AbstractJavaElement> subElements,
-					 List<AbstractJavaStructure> implement, AbstractJavaStructure superClass) {
-		super(name, access, modifiers, subElements, implement);
-		this.superClass = superClass;
-	}
+
 
 	public JavaClass(String cleanName) {
 		super(cleanName);
