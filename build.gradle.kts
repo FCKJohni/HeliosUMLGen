@@ -66,7 +66,7 @@ class GraalTransformer : com.github.jengelman.gradle.plugins.shadow.transformers
         val context: TransformerContext = p0!!
         matchCount += 1
         targetPath = context.path
-        var lines = context.`is`.bufferedReader().readLines().toMutableList()
+        val lines = context.`is`.bufferedReader().readLines().toMutableList()
         lines.onEachIndexed  { index, s ->
             run {
                 val replacement = lines[index].replace("language1", "language$matchCount")

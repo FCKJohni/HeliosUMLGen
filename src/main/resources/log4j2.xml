@@ -14,11 +14,13 @@
         </Console>
     </Appenders>
     <Loggers>
+        <Logger name="com.oracle.truffle.api" level="off"/>
         <Root level="info">
             <AppenderRef level="info" ref="Console"/>
         </Root>
         <Logger name="net.dv8tion.jda" level="info" additivity="false">
             <AppenderRef level="info" ref="ConsoleJDA"/>
         </Logger>
+
     </Loggers>
 </Configuration>

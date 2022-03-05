@@ -1,5 +1,7 @@
 package eu.heliosteam.heliosumlgen;
 
+import com.oracle.truffle.api.Truffle;
+import com.oracle.truffle.api.TruffleLogger;
 import eu.heliosteam.heliosumlgen.javaModel.visitor.IUMLVisitor;
 import eu.heliosteam.heliosumlgen.javaModel.visitor.UMLDotVisitor;
 import guru.nidi.graphviz.engine.Format;
@@ -7,6 +9,10 @@ import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
 import org.apache.commons.cli.*;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
@@ -71,6 +77,9 @@ public class HeliosUMLGen {
             HeliosLogger.warn("Attempting to generate Graphviz Image");
             try {
                 FileInputStream stream = new FileInputStream("output.txt");
+                Logger logger = (Logger) LoggerFactory.getLogger(Graphviz.class);
+                logger.setLevel(Level.OFF);
+                System.setProperty("engine.WarnInterpreterOnly", "false");
                 MutableGraph graph = new Parser().read(stream);
                 Graphviz.fromGraph(graph).width(700).render(Format.PNG).toFile(new File("output.png"));
                 HeliosLogger.success("Successfully generated Graphviz Image [output.png]");

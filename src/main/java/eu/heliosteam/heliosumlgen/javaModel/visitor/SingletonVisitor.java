@@ -44,7 +44,7 @@ public class SingletonVisitor implements IStructureVisitor {
 	
 	private boolean checkForModifier(List<IModifier> modifiers) {
 		for(IModifier mod: modifiers)
-			if(StaticModifier.class.isInstance(mod))
+			if(mod instanceof StaticModifier)
 				return true;
 		
 		return false;
