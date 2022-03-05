@@ -1,9 +1,19 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     java
+    application
+    id("com.github.johnrengelman.shadow") version("7.1.2")
 }
 
 group = "eu.heliosteam"
 version = "1.0-SNAPSHOT"
+
+
+application {
+    mainClass.set("eu.heliosteam.heliosumlgen.HeliosUMLGen")
+}
+
 
 repositories {
     mavenCentral()

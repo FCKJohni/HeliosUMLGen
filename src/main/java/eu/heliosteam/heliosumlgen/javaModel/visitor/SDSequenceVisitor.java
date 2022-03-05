@@ -19,6 +19,13 @@ public class SDSequenceVisitor implements ISequenceVisitor {
     private final int depth;
     private final OutputStream out;
 
+    public SDSequenceVisitor(String className, QualifiedMethod method, int depth, OutputStream out) {
+        this.className = className;
+        this.method = method;
+        this.depth = depth;
+        this.out = out;
+    }
+
 	@Override
     public void visit(JavaModel model) throws IOException {
         AbstractJavaStructure struct = model.getStructure(className);
