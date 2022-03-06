@@ -18,7 +18,6 @@ repositories {
 
 dependencies {
     implementation("com.google.guava:guava:31.0.1-jre")
-    implementation("com.google.code.gson:gson:2.9.0")
     implementation("commons-cli:commons-cli:1.5.0")
     implementation("guru.nidi:graphviz-java:0.18.1")
 
@@ -33,7 +32,8 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:1.18.22")
     annotationProcessor("org.projectlombok:lombok:1.18.22")
-    implementation("org.apache.xmlgraphics:batik-all:1.14")
+    implementation("org.apache.xmlgraphics:batik:1.14")
+    implementation("org.apache.xmlgraphics:batik-transcoder:1.14")
 
 
 

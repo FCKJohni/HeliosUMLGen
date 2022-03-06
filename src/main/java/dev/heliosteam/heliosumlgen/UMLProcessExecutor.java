@@ -64,6 +64,7 @@ public class UMLProcessExecutor {
             transcoder.transcode(transcoderInput, transcoderOutput);
             fileOutputStream.flush();
             fileOutputStream.close();
+            Files.delete(tempOutput.toPath());
             HeliosLogger.success("Successfully generated Graphviz Image [" + output.getName() + "]");
         } catch (Exception e) {
             HeliosLogger.error("Failed generating Graphviz Image");
