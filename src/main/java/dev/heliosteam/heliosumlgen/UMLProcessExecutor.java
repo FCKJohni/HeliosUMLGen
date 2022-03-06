@@ -8,10 +8,14 @@ import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.TranscodingHints;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 
 public class UMLProcessExecutor {
@@ -48,7 +52,18 @@ public class UMLProcessExecutor {
         try {
             FileInputStream stream = new FileInputStream(input);
             MutableGraph graph = new Parser().read(stream);
-            Graphviz.fromGraph(graph).engine(Engine.DOT).width(700).render(Format.PNG).toFile(output);
+            File tempOutput = new File("temp-output.svg");
+            Graphviz.fromGraph(graph).engine(Engine.DOT).width(700).render(Format.SVG).toFile(tempOutput);
+            String content = Files.readString(tempOutput.toPath());
+            content = content.replace("stroke=\"transparent\"", "stroke=\"white\"");
+            Files.writeString(tempOutput.toPath(), content);
+            TranscoderInput transcoderInput = new TranscoderInput(new FileInputStream(tempOutput));
+            FileOutputStream fileOutputStream = new FileOutputStream(output);
+            PNGTranscoder transcoder = new PNGTranscoder();
+            TranscoderOutput transcoderOutput = new TranscoderOutput(fileOutputStream);
+            transcoder.transcode(transcoderInput, transcoderOutput);
+            fileOutputStream.flush();
+            fileOutputStream.close();
             HeliosLogger.success("Successfully generated Graphviz Image [" + output.getName() + "]");
         } catch (Exception e) {
             HeliosLogger.error("Failed generating Graphviz Image");
