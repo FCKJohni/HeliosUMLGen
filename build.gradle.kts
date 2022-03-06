@@ -35,6 +35,4 @@ dependencies {
     implementation("org.apache.xmlgraphics:batik:1.14")
     implementation("org.apache.xmlgraphics:batik-transcoder:1.14")
 
-
-
 }
