@@ -1,14 +1,15 @@
 package dev.heliosteam.heliosumlgen;
 
 import dev.heliosteam.heliosumlgen.digraph.DigraphBuilder;
+import guru.nidi.graphviz.engine.Engine;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
 
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -38,8 +39,8 @@ public class UMLProcessExecutor {
             }
 
             digraphBuilder.endMethods();
+            digraphBuilder.handleRelations(aClass);
         }
-        digraphBuilder.addRelations();
         digraphBuilder.end();
     }
 
@@ -47,7 +48,7 @@ public class UMLProcessExecutor {
         try {
             FileInputStream stream = new FileInputStream(input);
             MutableGraph graph = new Parser().read(stream);
-            Graphviz.fromGraph(graph).width(700).render(Format.PNG).toFile(output);
+            Graphviz.fromGraph(graph).engine(Engine.DOT).width(700).render(Format.PNG).toFile(output);
             HeliosLogger.success("Successfully generated Graphviz Image [" + output.getName() + "]");
         } catch (Exception e) {
             HeliosLogger.error("Failed generating Graphviz Image");

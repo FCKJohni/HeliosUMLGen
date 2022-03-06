@@ -1,6 +1,7 @@
 package dev.heliosteam.heliosumlgen;
 
 import dev.heliosteam.heliosumlgen.utils.ClassFinder;
+import lombok.SneakyThrows;
 import org.apache.commons.cli.*;
 import org.apache.commons.exec.OS;
 import org.apache.commons.lang3.SystemUtils;
@@ -10,6 +11,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,9 +20,11 @@ public class HeliosUMLGen {
     private UMLProcessExecutor umlProcessExecutor;
 
     public static void main(String[] args) {
+        System.setProperty("java.awt.headless", "false");
         new HeliosUMLGen(args);
     }
 
+    @SneakyThrows
     public HeliosUMLGen(String[] args) {
         this.umlProcessExecutor = new UMLProcessExecutor(this);
         Options options = new Options();
@@ -96,16 +100,10 @@ public class HeliosUMLGen {
                     File output = umlProcessExecutor.generatePNG(text, png);
                     HeliosLogger.success("generation completed");
                     if (commandLine.hasOption("openPNG")) {
-                        String[] osIndependentCommand = {"cmd.exe", "/c", "start", "\"Dummy\"", "\"" + output.getAbsolutePath() + "\""};
-                        if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) {
-                            osIndependentCommand = new String[]{"\"", output.getAbsolutePath() + "\""};
-                        }
-                        ProcessBuilder processBuilder = new ProcessBuilder(osIndependentCommand);
-                        try {
-                            processBuilder.start();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            HeliosLogger.error("Failed to open PNG");
+                        if(Desktop.isDesktopSupported()) {
+                            Desktop.getDesktop().open(output);
+                        }else{
+                            HeliosLogger.error("Unable to open Image | Headless");
                         }
                     }
                 }
