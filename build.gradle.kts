@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     java
     application
@@ -10,6 +12,10 @@ version = "1.0-SNAPSHOT"
 
 application {
     mainClass.set("dev.heliosteam.heliosumlgen.HeliosUMLGen")
+}
+
+tasks.withType<ShadowJar> {
+    minimize()
 }
 
 repositories {
